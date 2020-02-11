@@ -1,0 +1,14 @@
+{
+    "mode": "client",
+    "ESSID": "Your AP ID",
+    "PASSWORD": "Your AP password",
+    "AP-ESSID": "trekbit",
+    "AP-PASSWORD": "88888888",
+    "web-login": "admin",
+    "web-passwd": "admin",
+    "r1pin": "14",
+    "r2pin": "12",
+    "r1enable": true,
+    "r2enable": true,
+    "timeZone": "3"
+}

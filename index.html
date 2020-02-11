@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* {
+  box-sizing: border-box;
+}
+
+/* Create three equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 100%;
+  padding: 10px;
+  height: 300px; /* Should be removed. Only for demonstration */
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+/* table, th, td {
+  border: 1px solid black;
+  width: 100%;
+} */
+
+table {
+font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+font-size: 14px;
+border-collapse: collapse;
+text-align: center;
+}
+th, td:first-child {
+background: #AFCDE7;
+color: white;
+padding: 10px 20px;
+}
+th, td {
+border-style: solid;
+border-width: 0 1px 1px 0;
+border-color: white;
+}
+td {
+background: #D8E6F3;
+}
+th:first-child, td:first-child {
+text-align: left;
+}
+
+</style>
+<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+<script>
+    $.getJSON( "./data.json", function( data ) {
+      console.log(data)
+    var items = [];
+    $.each(data, function (number, j_str){
+      console.log(number, j_str)
+      $.each(j_str, function(key, val){
+        items.push("<tr> <td> " + number + " <td>" + key + " <td> <form action=/set_total_limit method=GET> <input type=number name="+ number + "_"+ key +" value="+ val +"> <div><button>SET</button></div></form>");
+      })
+    });
+    // $.each( data, function( key, val ) {
+    //     items.push("<tr> <td>" + key + " <td> <form action=/set_total_limit method=GET> <input name="+ key +" value="+ val +"> <div><button>SET</button></div></form>");
+    // });
+   
+    $( "<ul/>", {
+      "class": "my-new-list",
+      html: items.join( "" )
+    }).appendTo( "card" );
+  });
+</script>
+
+</head>
+
+<body>
+
+<div class="row" align=center>
+  <h2>Card list</h2>
+</div>
+
+<div class="row">
+  <div class="column" style="background-color:rgb(255, 255, 255);" align=center>
+    <!-- <h2>Column 1</h2> -->
+    <p>Set procedure limit</p>
+    <card>
+    </card>
+  </div>
+</div>
+
+
+<table>
+
+</table>
+
+
+</body>
+</html>
+
