@@ -1,4 +1,4 @@
-[![Bintray](https://img.shields.io/bintray/v/blocke/releases/scalajack.svg?maxAge=3600)](https://bintray.com/blocke/releases/scalajack)
+[![Bintray](https://img.shields.io/badge/micropython-v1.12-green)]()
 
 *This project is automatisation system*
 *for water loading system*
