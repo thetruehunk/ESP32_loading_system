@@ -1,3 +1,4 @@
+https://img.shields.io/badge/micropython-v1.12-green
 *This project is automatisation system*
 *for water loading system*
 
