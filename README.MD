@@ -1,4 +1,4 @@
-[![Bintray](https://img.shields.io/badge/micropython-v1.12-green)]()
+[![Bintray](https://img.shields.io/badge/micropython-v1.12-green)]() [![Bintray](https://img.shields.io/badge/code%20style-black-black)]()
 
 *This project is automatisation system*
 *for water loading system*
