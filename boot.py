@@ -4,12 +4,12 @@
 import gc
 import machine
 import webrepl
-import wifi
-import usocket as socket
-from ntptime import settime
-import time
+# import usocket as socket
+# from ntptime import settime
+# import time
+from functions import wifi_init 
 
-wifi.do_connect()
+wifi_init()
 webrepl.start()
-gc.collect()
+# gc.collect()
 #settime()   # убрать и использвать свою функцию

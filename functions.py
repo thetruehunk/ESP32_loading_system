@@ -1,77 +1,71 @@
-import picoweb
+import NFC_PN532 as nfc
+from machine import Pin, SPI
+import machine
+import utime as time
+import ubinascii
+import network
 import ujson as json
 import uasyncio as asyncio
 import urequests as requests
-import ubinascii
-import utime as time
-from machine import Pin, SPI
-import machine
-import NFC_PN532 as nfc
-from functions import load_config, ip_addr
+import errno
+
+ip_addr = ''
+
+#################################
+def load_config(config_file):
+    try:
+        with open(config_file) as f:
+            config = json.load(f)
+        return config    
+    except:
+        # OSError: [Errno 2] ENOENT
+        print('No such config file:', config_file)
+        time.sleep(5)
+        machine.reset()
 
 
-relay = Pin(18, Pin.OUT)
+def save_config(config):
+    pass
 
 
-def load_data(data_file):
-    config = load_config('config.json')
+def load_data(config):
     if config["mode"] == "server":
         data_file = "data.json"
     with open(data_file) as d:
         data_f = json.load(d)
-    return data_f
 
 
-def save_data(data_file):
+def save_data():
     with open(data_file, "w") as w:
-        json.dump(data_file, w)
+        json.dump(data_f, w)
 
-
-def set_limit_handler(qs):
-    data_f = load_data('data.json')
-    result1 = qs.replace("_", "=")
-    result2 = result1.replace("&", "=")
-    result3 = result2.split("=")
-    day_limit_value = result3[2]
-    number = result3[3]
-    card = result3[4]
-    value = result3[5]
-    data_f[number][card] = int(value)
-    data_f[number]["day limit"] = int(day_limit_value)
-    save_data('data.json')
-
-
-def require_auth(func):
-    def auth(req, resp):
-        config = load_config('config.json')
-        auth = req.headers.get(b"Authorization")
-        if not auth:
-            yield from resp.awrite(
-                "HTTP/1.0 401 NA\r\n"
-                'WWW-Authenticate: Basic realm="Picoweb Realm"\r\n'
-                "\r\n"
-            )
-            return
-
-        auth = auth.split(None, 1)[1]
-        auth = ubinascii.a2b_base64(auth).decode()
-        req.username, req.passwd = auth.split(":", 1)
-
-        if not (
-            (req.username == config["web-login"])
-            and (req.passwd == config["web-passwd"])
-        ):
-            yield from resp.awrite(
-                "HTTP/1.0 401 NA\r\n"
-                'WWW-Authenticate: Basic realm="Picoweb Realm"\r\n'
-                "\r\n"
-            )
-            return
-
-        yield from func(req, resp)
-
-    return auth
-
+##### hardware functions #####
+def wifi_init():
+    config = load_config('config.json')
+    global ip_addr
+    wifi_if = network.WLAN(network.STA_IF)
+    if not wifi_if.isconnected():
+        print('connecting to network...')
+    wifi_if.active(True)
+    wifi_if.connect(config["ESSID"], config["PASSWORD"])
+    #  Try connect to Access Point
+    a = 0
+    while not wifi_if.isconnected() and a != 5:
+        print('.', end='')
+        time.sleep(5)
+        a += 1
+        pass
+        # If module cannot connect to WiFi - he's creates personal AP
+        if not wifi_if.isconnected():
+            print(2)
+            wifi_if.disconnect()
+            wifi_if.active(False)
+            wifi_if = network.WLAN(network.AP_IF)
+            wifi_if.active(True)
+            wifi_if.config(essid=(config["AP-ESSID"]), password=(config["AP-PASSWORD"]))
+            wifi_if.ifconfig(('192.168.100.1', '255.255.255.0', '192.168.100.1', '8.8.8.8'))
+        print('network config:', wifi_if.ifconfig())
+    ip_addr = wifi_if.ifconfig()[0] 
 
 def init_card_reader():
     # PN532 module connect and initialize
@@ -88,9 +82,8 @@ def init_card_reader():
         machine.reset()
 
 
-def read_card(dev, tmot):
+def read_card(dev, tmot, relay, config):
     """Accepts a device and a timeout in millisecs """
-    config = load_config('config.json')
     print("Reading...")
     uid = dev.read_passive_target(timeout=tmot)
     if uid is None:
@@ -119,7 +112,7 @@ def read_card(dev, tmot):
                 }  # списываем одну процедуру
                 # сейчас сохраняем данные после каждого списания
                 if config["mode"] == "server":
-                    save_data('data.json')
+                    save_data()
                 else:
                     try:
                         requests.get(
@@ -141,11 +134,11 @@ def read_card(dev, tmot):
                 pass
 
 
-def read_card_loop():
+def read_card_loop(relay, config):
     pn532 = init_card_reader()
     while True:
         try:
-            read_card(pn532, 500)
+            read_card(pn532, 500, relay, config)
             await asyncio.sleep(1)
         except RuntimeError:
             print("RuntimeError")
@@ -153,6 +146,7 @@ def read_card_loop():
             print("Server not found")
 
 
+########################
 def get_row_by_key(data_json, card_number):
     for keys, values in data_json.items():
         if card_number in values.keys():
@@ -165,31 +159,15 @@ def get_row_by_key(data_json, card_number):
             )
 
 
-app = picoweb.WebApp(__name__)
-
-@app.route("/")
-@require_auth
-def send_index(req, resp):
-    yield from app.sendfile(resp, "/www/index.html")
-
-
-@app.route("/data.json")
-def send_data(req, resp):
-    yield from app.sendfile(resp, "data.json")
-
-
-@app.route("/set_limit")
-def set_limit(req, resp):
-    if req.method == "GET":
-        set_limit_handler(req.qs)
-        headers = {"Location": "/"}
-        yield from picoweb.start_response(resp, status="303", headers=headers)
-
-    else:  # GET, apparently
-        pass
-
-
-loop = asyncio.get_event_loop()
-loop.create_task(read_card_loop())
-
-app.run(debug=1, host=ip_addr, port=80)
+##### WEB handlers #####
+def set_limit_handler(qs):
+    result1 = qs.replace("_", "=")
+    result2 = result1.replace("&", "=")
+    result3 = result2.split("=")
+    day_limit_value = result3[2]
+    number = result3[3]
+    card = result3[4]
+    value = result3[5]
+    data_f[number][card] = int(value)
+    data_f[number]["day limit"] = int(day_limit_value)
+    save_data()

@@ -21,26 +21,23 @@
   display: table;
   clear: both;
 }
-/* table, th, td {
-  border: 1px solid black;
-  width: 100%;
-} */
 
 table {
 font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
-font-size: 14px;
+font-size: 12px;
 border-collapse: collapse;
 text-align: center;
 }
 th, td:first-child {
 background: #AFCDE7;
-color: white;
-padding: 10px 20px;
+color: rgb(0, 0, 0);
+padding: 5px 20px;
 }
 th, td {
 border-style: solid;
 border-width: 0 1px 1px 0;
 border-color: white;
+padding: 5px 5px;
 }
 td {
 background: #D8E6F3;
@@ -48,27 +45,35 @@ background: #D8E6F3;
 th:first-child, td:first-child {
 text-align: left;
 }
+input[type=submit] {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 3px 15px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+input[type=number] {
+  width: 110px;
+}
 
 </style>
 <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
 <script>
-    $.getJSON( "./data.json", function( data ) {
-      console.log(data)
+    $.getJSON( "./config.json", function( data ) {
     var items = [];
-    $.each(data, function (number, j_str){
-      console.log(number, j_str)
-      $.each(j_str, function(key, val){
-        items.push("<tr> <td> " + number + " <td>" + key + " <td> <form action=/set_total_limit method=GET> <input type=number name="+ number + "_"+ key +" value="+ val +"> <div><button>SET</button></div></form>");
+    var day_limit;
+    var card_number;
+    var total_limit;
+    var realese_count;
+    $.each(data, function(key, val){
+      items.push("<tr> <td> " + number_row + " <td>" + card_number + " <td> <form action=/set_total_limit method=GET> <input type=number name=day_limit value ="+ day_limit + ">  <input type=number name="+ number_row + "_"+ card_number +" value="+ total_limit +"> <input type=submit value=SET></form>");
       })
-    });
-    // $.each( data, function( key, val ) {
-    //     items.push("<tr> <td>" + key + " <td> <form action=/set_total_limit method=GET> <input name="+ key +" value="+ val +"> <div><button>SET</button></div></form>");
-    // });
-   
     $( "<ul/>", {
       "class": "my-new-list",
       html: items.join( "" )
-    }).appendTo( "card" );
+    }).appendTo( "config_table" );
   });
 </script>
 
@@ -76,16 +81,16 @@ text-align: left;
 
 <body>
 
-<div class="row" align=center>
-  <h2>Card list</h2>
+<div class="row" align=right>
+  <p>Settings</p>
 </div>
 
 <div class="row">
   <div class="column" style="background-color:rgb(255, 255, 255);" align=center>
     <!-- <h2>Column 1</h2> -->
-    <p>Set procedure limit</p>
-    <card>
-    </card>
+    <p>Set Settings</p>
+    <config_table>
+    </config_table>
   </div>
 </div>
 
