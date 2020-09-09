@@ -1,0 +1,117 @@
+{% args config %}
+<!doctype html>
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* {
+  box-sizing: border-box;
+}
+
+/* Create three equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 100%;
+  padding: 10px;
+  height: 300px; /* Should be removed. Only for demonstration */
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+/* table, th, td {
+  border: 1px solid black;
+  width: 100%;
+} */
+
+table {
+font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+font-size: 12px;
+border-collapse: collapse;
+text-align: center;
+}
+th, td:first-child {
+background: #AFCDE7;
+color: rgb(0, 0, 0);
+padding: 5px 20px;
+}
+th, td {
+border-style: solid;
+border-width: 0 1px 1px 0;
+border-color: white;
+padding: 5px 5px;
+}
+td {
+background: #D8E6F3;
+}
+th:first-child, td:first-child {
+text-align: left;
+}
+input[type=submit] {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 3px 15px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+input[type=number] {
+  width: 110px;
+}
+
+</style>
+    <title>Settings</title>
+  </head>
+  <body>
+    <div class="row" align=right>
+      <a href="/"> [main]</a>
+      <a href="/statistic"> [statistic]</a>
+    </div>
+    <div class="row" align=center>
+      <h2>Config</h2>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="column" style="background-color:rgb(255, 255, 255);" align=center>
+          <h3>Module settings</h3>
+          <form action="/send_config" method="GET">
+            <div class="field">
+              <label for="ESSID">ESSID</label>
+              <input type="text" id="ESSID" name="ESSID" value={{config['ESSID']}}>
+            </div>
+            <div class="field">
+              <label for="PASSWORD">PASSWORD</label>
+              <input type="text" id="PASSWORD" name="PASSWORD" value={{config['PASSWORD']}}>
+            </div>
+            <div class="field">
+              <label for="PASSWORD">ESSID_AP</label>
+              <input type="text" id="AP-ESSID" name="AP-ESSID" value={{config['AP-ESSID']}}>
+            </div>
+            <div class="field">
+              <label for="PASSWORD">AP-PASSWORD</label>
+              <input type="text" id="AP-PASSWORD" name="PASSWORD_AP" value={{config['AP-PASSWORD']}}><br><br>
+            </div>
+            <div class="field">
+              <input type="submit" value="Submit">
+            </div>
+          </form>
+          <h5>Time</h5>
+          <div id="clock">
+            <form action="set_time" method="GET"></form>
+              <div><input type="number" id="Hour" name="Hour" value='12' size="2"></div>
+              <p>:</p>
+              <div><input type="number" id="Minets" name="Minets" value='00' size="2"></div>
+              <div><input type="submit" value="Submit"></div>
+            </form>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
