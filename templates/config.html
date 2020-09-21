@@ -1,5 +1,4 @@
 {% args config %}
-<!doctype html>
 <!DOCTYPE html>
 <html>
 <head>
@@ -23,10 +22,6 @@
   display: table;
   clear: both;
 }
-/* table, th, td {
-  border: 1px solid black;
-  width: 100%;
-} */
 
 table {
 font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
@@ -61,57 +56,147 @@ input[type=submit] {
   cursor: pointer;
 }
 input[type=number] {
-  width: 110px;
+  width: 149px;
+}
+.field {
+  clear:both;
+  text-align:right;
+  line-height:30px;
+  column-width: 145px;
+  }
+label {
+  float:left;
+  padding-right:10px;
+  }
+  .switch {
+  position: relative;
+  display: inline-block;
+  width: 33px;
+  height: 18px;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(14px);
+  -ms-transform: translateX(14px);
+  transform: translateX(14px);
 }
 
 </style>
-    <title>Settings</title>
-  </head>
-  <body>
-    <div class="row" align=right>
-      <a href="/"> [main]</a>
-      <a href="/statistic"> [statistic]</a>
-    </div>
-    <div class="row" align=center>
-      <h2>Config</h2>
-    </div>
-    <div class="container">
-      <div class="row">
-        <div class="column" style="background-color:rgb(255, 255, 255);" align=center>
-          <h3>Module settings</h3>
-          <form action="/send_config" method="GET">
-            <div class="field">
-              <label for="ESSID">ESSID</label>
-              <input type="text" id="ESSID" name="ESSID" value={{config['ESSID']}}>
-            </div>
-            <div class="field">
-              <label for="PASSWORD">PASSWORD</label>
-              <input type="text" id="PASSWORD" name="PASSWORD" value={{config['PASSWORD']}}>
-            </div>
-            <div class="field">
-              <label for="PASSWORD">ESSID_AP</label>
-              <input type="text" id="AP-ESSID" name="AP-ESSID" value={{config['AP-ESSID']}}>
-            </div>
-            <div class="field">
-              <label for="PASSWORD">AP-PASSWORD</label>
-              <input type="text" id="AP-PASSWORD" name="PASSWORD_AP" value={{config['AP-PASSWORD']}}><br><br>
-            </div>
-            <div class="field">
-              <input type="submit" value="Submit">
-            </div>
-          </form>
-          <h5>Time</h5>
-          <div id="clock">
-            <form action="set_time" method="GET"></form>
-              <div><input type="number" id="Hour" name="Hour" value='12' size="2"></div>
-              <p>:</p>
-              <div><input type="number" id="Minets" name="Minets" value='00' size="2"></div>
-              <div><input type="submit" value="Submit"></div>
-            </form>
+  <title>Settings</title>
+</head>
+<body>
+  <div class="row">
+    <a href="/"> [main]</a>
+    <a href="/statistic"> [statistic]</a>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="column" style="background-color:rgb(255, 255, 255);">
+        <h3>Module settings</h3>
+        <form action="/send_config" method="GET">
+          <h4>Server state</h4>
+          <label class="switch">
+            <input type="checkbox"  name="SERVER" id="SERVER" value="True" {{'checked="checked"' if config["SERVER"] == "True" else ""}}>
+            <span class="slider"></span>
+          </label>
+          <div class="field">
+            <label for="ESSID">ESSID</label>
+            <input type="text" id="ESSID" name="ESSID" value={{config['ESSID']}}>
           </div>
-        </div>
-        </div>
+          <div class="field">
+            <label for="PASSWORD">PASSWORD</label>
+            <input type="text" id="PASSWORD" name="PASSWORD" value={{config['PASSWORD']}}>
+          </div>
+          <div class="field">
+            <label for="SERVER-IP">SERVER-IP</label>
+            <input type="text" id="SERVER-IP" name="SERVER-IP" value={{config['SERVER-IP']}}><br><br>
+          </div>
+          <div class="field">
+            <label for="AP-ESSID">AP-ESSID</label>
+            <input type="text" id="AP-ESSID" name="AP-ESSID" value={{config['AP-ESSID']}}>
+          </div>
+          <div class="field">
+            <label for="AP-PASSWORD">AP-PASSWORD</label>
+            <input type="text" id="AP-PASSWORD" name="AP-PASSWORD" value={{config['AP-PASSWORD']}}>
+          </div>
+          <div class="field">
+            <label for="CHANNEL">CHANNEL</label>
+            <input type="number" id="CHANNEL" name="CHANNEL" value={{config['CHANNEL']}}><br><br>
+          </div>
+          <div class="field">
+            <label for="WEB-LOGIN">WEB-LOGIN</label>
+            <input type="text" id="WEB-LOGIN" name="WEB-LOGIN" value={{config['WEB-LOGIN']}}>
+          </div>
+          <div class="field">
+            <label for="WEB-PASSWORD">WEB-PASSWORD</label>
+            <input type="text" id="WEB-PASSWORD" name="WEB-PASSWORD" value={{config['WEB-PASSWORD']}}><br><br>
+          </div>
+          <div class="field">
+            <label for="RELAY-PIN">RELAY-PIN</label>
+            <input type="text" id="RELAY-PIN" name="RELAY-PIN" value={{config['RELAY-PIN']}}>
+          </div>
+          <div class="field">
+            <label for="RELAY-ENABLE">RELAY-ENABLE</label>
+            <input type="text" id="RELAY-ENABLE" name="RELAY-ENABLE" value={{config['RELAY-ENABLE']}}>
+          </div>
+          <div class="field">
+            <label for="RELAY-TIMER">RELAY-TIMER</label>
+            <input type="number" step="0.01" id="RELAY-TIMER" name="RELAY-TIMER" value={{config['RELAY-TIMER']}}><br><br>
+          </div>
+          <div class="field">
+            <input type="submit" value="Submit">
+          </div>
+        </form>
+        <!-- <h5>Time</h5>
+        <div id="clock">
+          <form action="set_time" method="GET"></form>
+            <div><input type="number" id="Hour" name="Hour" value='12' size="2"></div>
+            <p>:</p>
+            <div><input type="number" id="Minets" name="Minets" value='00' size="2"></div>
+            <div><input type="submit" value="Submit"></div>
+          </form>
+        </div> -->
+      </div>
       </div>
     </div>
-  </body>
+  </div>
+</body>
 </html>
